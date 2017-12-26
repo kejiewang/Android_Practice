@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         }
         for(int i = 0; i < files.length; i++){
             File file = files[i];
+
             //items.add();
         }
     }
