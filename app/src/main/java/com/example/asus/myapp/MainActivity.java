@@ -1,7 +1,12 @@
 package com.example.asus.myapp;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -22,6 +27,34 @@ public class MainActivity extends AppCompatActivity {
         lv1 = (ListView) findViewById(R.id.ListView1);
         mPath = (TextView) findViewById(R.id.textView);
         showFileDir(rootPath);
+        lv1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                dealPathPosition(position);
+            }
+        });
+    }
+
+    private void dealPathPosition(int position) {
+        File file = new File(paths.get(position));
+        if(file.canRead()){
+            if(file.isDirectory()){
+                //如果是文件夹
+                showFileDir(paths.get(position));
+            }else{
+                openFile(file);
+            }
+        }else{
+            new AlertDialog.Builder(this).setTitle("警告").setMessage("权限不足").setPositiveButton("OK",null).show();
+        }
+    }
+
+    private void openFile(File f) {
+        Intent intent  = new Intent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setAction(android.content.Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.fromFile(f),"*/*");
+        startActivity(intent);
     }
 
     private void showFileDir(String filePath) {
@@ -42,8 +75,9 @@ public class MainActivity extends AppCompatActivity {
         }
         for(int i = 0; i < files.length; i++){
             File file = files[i];
-
-            //items.add();
+            items.add(file.getName());
+            paths.add(file.getPath());
         }
+       //lv1.setAdapter(new );
     }
 }
