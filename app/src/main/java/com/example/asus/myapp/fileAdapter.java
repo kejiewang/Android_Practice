@@ -11,6 +11,13 @@ import java.util.List;
  * Adater used to inflate to the file.
  */
 
+/**
+    图标控制
+    mIcon1 回到根目录
+    mIcon2 返回到上一层
+    mIcon3 文件夹图标
+    mIcon4 文件图标
+ */
 public class fileAdapter extends ArrayAdapter {
 
     private LayoutInflater mInflater; //用来保存上下文菜单
