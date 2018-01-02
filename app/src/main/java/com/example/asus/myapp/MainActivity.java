@@ -2,6 +2,7 @@ package com.example.asus.myapp;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,7 +20,8 @@ public class MainActivity extends AppCompatActivity {
     ListView lv1;
     private List<String> items = null;
     private List<String> paths = null;
-    private String rootPath = "/";
+    //private String rootPath = "/";
+    private String rootPath = Environment.getExternalStorageDirectory().getAbsolutePath();
     private TextView mPath;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +57,16 @@ public class MainActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(android.content.Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.fromFile(f),"*/*");
-        startActivity(intent);
+        startActivityForResult(intent,1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_OK){
+            Uri uri = data.getData();
+            Toast.makeText(MainActivity.this,uri.toString(),Toast.LENGTH_SHORT).show();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void showFileDir(String filePath) {
@@ -63,6 +75,9 @@ public class MainActivity extends AppCompatActivity {
         items = new ArrayList<String>();
         paths = new ArrayList<String>();
         File f = new File(filePath);
+        if(f==null){
+            f = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
+        }
         File[] files = f.listFiles(); //通过listFiles获取当前File(目录)的所有文件及子目录
 
         if (!filePath.equals(rootPath)) { //如果不是根目录
@@ -75,9 +90,15 @@ public class MainActivity extends AppCompatActivity {
         }
         for(int i = 0; i < files.length; i++){
             File file = files[i];
+            if(file.isFile()){
+                String temp = file.getName();
+                if(!temp.endsWith("xls")){
+                    continue;
+                }
+            }
             items.add(file.getName());
             paths.add(file.getPath());
         }
-       //lv1.setAdapter(new );
+       lv1.setAdapter(new fileAdapter(this, items, paths));
     }
 }
